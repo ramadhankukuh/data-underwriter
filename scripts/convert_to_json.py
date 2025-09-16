@@ -1,33 +1,23 @@
-import os
 import pandas as pd
-from pathlib import Path
+import os
+import json
 
-data_folder = Path("data")
-output_json = Path("data/ipo.json")
+# Folder data hasil download Kaggle
+data_dir = "data"
+input_csv = os.path.join(data_dir, "Underwriter - e-IPO Data.csv")
+output_json = os.path.join(data_dir, "ipo.json")
 
-# Cari file CSV hasil download dari Kaggle
-csv_files = [f for f in os.listdir(data_folder) if f.lower().endswith(".csv")]
+if not os.path.exists(input_csv):
+    raise FileNotFoundError(f"Tidak menemukan {input_csv}, cek nama file hasil Kaggle")
 
-if not csv_files:
-    raise FileNotFoundError(f"Tidak menemukan file CSV di {data_folder}")
-
-# Prioritaskan file yang mengandung "Underwriter" atau "e-IPO"
-csv_target = None
-for f in csv_files:
-    if "underwriter" in f.lower() or "e-ipo" in f.lower():
-        csv_target = f
-        break
-
-# Kalau tidak ada yang match, pakai file pertama
-if csv_target is None:
-    csv_target = csv_files[0]
-
-input_csv = data_folder / csv_target
-
-print(f"📂 Membaca file: {input_csv}")
-
-# Baca CSV dan simpan ke JSON
+# Baca CSV
 df = pd.read_csv(input_csv)
-df.to_json(output_json, orient="records", indent=2, force_ascii=False)
 
-print(f"✅ JSON berhasil dibuat: {output_json}")
+# Konversi ke list of dict
+records = df.to_dict(orient="records")
+
+# Simpan ke JSON
+with open(output_json, "w", encoding="utf-8") as f:
+    json.dump(records, f, ensure_ascii=False, indent=2)
+
+print(f"✅ Berhasil konversi {len(records)} baris ke {output_json}")
