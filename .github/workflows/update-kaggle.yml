@@ -15,7 +15,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10   # Gantilah dengan Python versi 3.10 atau 3.9
+          python-version: 3.10  # Ganti 3.1 dengan 3.10 atau 3.9, yang valid
 
       - name: Install dependencies
         run: |
