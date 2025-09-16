@@ -1,0 +1,40 @@
+name: Update Kaggle Dataset
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # setiap hari jam 03:00 UTC
+  workflow_dispatch: 
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Install Kaggle
+        run: pip install kaggle pandas
+
+      - name: Setup Kaggle API
+        run: |
+          mkdir -p ~/.kaggle
+          echo '{"username":"${{ secrets.KAGGLE_USERNAME }}","key":"${{ secrets.KAGGLE_KEY }}"}' > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Download dataset
+        run: kaggle kernels output fahmirk/underwriters-track-record-e-ipo -p data/
+
+      - name: Convert to JSON
+        run: python scripts/convert_to_json.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/*.json
+          git commit -m "Auto update JSON from Kaggle"
+          git push
