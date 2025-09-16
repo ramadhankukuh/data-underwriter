@@ -2,7 +2,7 @@ name: Update Kaggle Dataset
 
 on:
   schedule:
-    - cron: "30 12 * * *"   # setiap hari jam 19:30 WIB
+    - cron: "30 12 * * *"   # setiap hari jam 19:30 WIB (12:30 UTC)
   workflow_dispatch:       # bisa manual trigger juga
 
 jobs:
@@ -15,7 +15,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10  # Ganti 3.1 dengan 3.10 atau 3.9, yang valid
+          python-version: 3.8   # Ganti ke Python 3.8 yang lebih kompatibel
+
+      - name: Check Python Version  # Menambahkan langkah untuk memastikan versi Python yang terpasang
+        run: python --version
 
       - name: Install dependencies
         run: |
